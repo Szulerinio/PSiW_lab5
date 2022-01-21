@@ -13,10 +13,17 @@
     #include <string.h>
     #include <pthread.h>
 
-    int generate( char *jPlikIn,char *jPlikOut ,char *rgb) {
-//       jPlikIn  = inArg;
-//       jPlikOut = outArg;
-//       rgb = colorArg;
+    int generate(char **par) {
+
+//          char *jPlikIn,char *jPlikOut ,char *rgb
+
+      char *jPlikIn  = par[0];
+      char *jPlikOut;
+      char *rgb = par[1];
+      char temp[100] ="\0";
+      strcat(temp, rgb);
+      strcat(temp, jPlikIn);
+      jPlikOut=temp;
 
       struct jpeg_decompress_struct in;
       struct jpeg_error_mgr jInErr;
@@ -92,8 +99,27 @@
 
 
     int main(int act, char **par) {
+        par+=1;
 
-        generate(par[0],par[1],par[2]);
-        printf("myString = %s\n", par[0]);
+        pthread_t red, green, blue;
+        const char *arrayR[2], *arrayG[2], *arrayB[2];
+        arrayR[0] = par[0];
+        arrayG[0] = par[0];
+        arrayB[0] = par[0];
+
+
+        arrayR[1] = "r";
+        arrayG[1] = "g";
+        arrayB[1] = "b";
+
+        pthread_create(&red, NULL, generate, arrayR);
+        pthread_create(&green, NULL, generate,arrayG);
+        pthread_create(&blue, NULL, generate, arrayB);
+        pthread_join(red, NULL);
+        pthread_join(green, NULL);
+        pthread_join(blue, NULL);
+        return EXIT_SUCCESS;
+
+//         generate(par[0],par[1],par[2]);
 
     }
